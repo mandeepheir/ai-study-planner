@@ -1,1 +1,59 @@
-<p>header works!</p>
+<nav>
+
+  <div class="logo">
+    AI Study Planner
+  </div>
+
+  <ul>
+    <li>
+      <a routerLink="/">Home</a>
+    </li>
+
+    <li>
+      <a routerLink="/planner">Planner</a>
+    </li>
+
+    <li>
+      <a routerLink="/dashboard">Dashboard</a>
+    </li>
+
+    <li>
+      <a routerLink="/progress">Progress</a>
+    </li>
+
+    <li>
+      <a routerLink="/ai">AI Tips</a>
+    </li>
+  </ul>
+
+  <div class="auth-buttons">
+
+    @if (authService.currentUser) {
+
+      <span class="user-email">
+        {{ authService.currentUser.email }}
+      </span>
+
+      <button (click)="logout()">
+        Logout
+      </button>
+
+    } @else {
+
+      <a routerLink="/login">
+        Login
+      </a>
+
+      <a routerLink="/signup">
+        Sign Up
+      </a>
+
+    }
+
+  </div>
+
+  <button (click)="toggleDarkMode()">
+    {{ isDarkMode ? '☀ Light' : '🌙 Dark' }}
+  </button>
+
+</nav>

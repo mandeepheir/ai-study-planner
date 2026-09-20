@@ -1,1 +1,148 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+
+    <div class="dashboard-header">
+        <h1>Dashboard</h1>
+
+        <p>
+            Overview of your study activity and upcoming deadlines.
+        </p>
+    </div>
+
+    <!-- STATISTICS -->
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <span class="stat-label">
+                Total Tasks
+            </span>
+
+            <strong>
+                {{ totalTasks }}
+            </strong>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-label">
+                Completed Tasks
+            </span>
+
+            <strong>
+                {{ completedTasks }}
+            </strong>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-label">
+                Pending Tasks
+            </span>
+
+            <strong>
+                {{ pendingTasks }}
+            </strong>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-label">
+                Completion Rate
+            </span>
+
+            <strong>
+                {{ completionRate }}%
+            </strong>
+        </div>
+
+    </div>
+
+
+    <!-- CHART -->
+
+    <section class="dashboard-section">
+
+        <h2>Task Completion</h2>
+
+        <div class="chart-card">
+
+            <apx-chart
+                [series]="chartSeries"
+                [chart]="chartDetails"
+                [labels]="chartLabels"
+                [responsive]="chartResponsive">
+            </apx-chart>
+
+        </div>
+
+    </section>
+
+
+    <!-- UPCOMING TASKS -->
+
+    <section class="dashboard-section">
+
+        <h2>Upcoming Tasks</h2>
+
+        <p class="section-description">
+            Tasks with deadlines in the next 3 days.
+        </p>
+
+        @if (upcomingTasks.length === 0) {
+
+            <div class="empty-card">
+
+                <div class="empty-icon">
+                    📚
+                </div>
+
+                <h3>No Upcoming Tasks</h3>
+
+                <p>
+                    You have no tasks due in the next 3 days.
+                </p>
+
+            </div>
+
+        } @else {
+
+            <div class="upcoming-list">
+
+                @for(task of upcomingTasks; track $index) {
+
+                    <div class="task-card">
+
+                        <div class="task-content">
+
+                            <h3>
+                                {{ task.subject }}
+                            </h3>
+
+                            <p class="task-description">
+                                {{ task.task }}
+                            </p>
+
+                            <div class="task-details">
+
+                                <span>
+                                    <strong>Category:</strong>
+                                    {{ task.category }}
+                                </span>
+
+                                <span>
+                                    <strong>Deadline:</strong>
+                                    {{ task.deadline }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                }
+
+            </div>
+
+        }
+
+    </section>
+
+</div>

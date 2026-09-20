@@ -1,1 +1,123 @@
-<p>planner works!</p>
+<div class="planner-container">
+
+    <h1 class="planner-title">Study Planner</h1>
+
+    <!-- TODO: remove before shipping, or gate behind environment.production -->
+    <button class="btn-ghost" (click)="testFirebase()">
+        Test Firebase
+    </button>
+
+    <form class="planner-form" (ngSubmit)="addTask()">
+
+        <div class="form-grid">
+
+            <div class="field">
+                <label for="subject">Subject</label>
+                <input
+                    id="subject"
+                    type="text"
+                    placeholder="Java"
+                    [(ngModel)]="subject"
+                    name="subject">
+            </div>
+
+            <div class="field">
+                <label for="task">Task</label>
+                <input
+                    id="task"
+                    type="text"
+                    placeholder="Finish assignment 3"
+                    [(ngModel)]="task"
+                    name="task">
+            </div>
+
+            <div class="field">
+                <label for="category">Category</label>
+                <select id="category" [(ngModel)]="category" name="category">
+                    <option value="">Select category</option>
+                    <option value="Assignment">Assignment</option>
+                    <option value="Quiz">Quiz</option>
+                    <option value="Exam">Exam</option>
+                    <option value="Project">Project</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="deadline">Deadline</label>
+                <input
+                    id="deadline"
+                    type="date"
+                    [(ngModel)]="deadline"
+                    name="deadline">
+            </div>
+
+        </div>
+
+        <button type="submit" class="btn-primary">
+            Add task
+        </button>
+
+    </form>
+
+    <hr class="divider">
+
+    <div class="planner-tasks-header">
+
+        <div class="field search-field">
+            <label for="search">Search tasks</label>
+            <input
+                id="search"
+                type="text"
+                placeholder="Search by subject or task"
+                [(ngModel)]="searchText"
+                name="searchText">
+        </div>
+
+        <p class="task-count">
+            {{ getFilteredTasks().length }} task{{ getFilteredTasks().length === 1 ? '' : 's' }}
+        </p>
+
+    </div>
+
+    <h2 class="section-label">Your tasks</h2>
+
+    @for(item of getFilteredTasks(); track item.id){
+
+        <div class="task-card">
+
+            <div class="task-card-top">
+                <div>
+                    <h3 class="task-subject">{{ item.subject }}</h3>
+                    <p class="task-name">{{ item.task }}</p>
+                </div>
+                <span class="status-badge" [class.status-done]="item.completed">
+                    {{ item.completed ? 'Completed' : 'Pending' }}
+                </span>
+            </div>
+
+            <div class="task-meta">
+                <span>{{ item.category }}</span>
+                <span>Due {{ item.deadline }}</span>
+            </div>
+
+            <div class="task-actions">
+                <button class="btn-secondary" (click)="toggleComplete(item)">
+                    {{ item.completed ? 'Mark as pending' : 'Mark as complete' }}
+                </button>
+                <button class="btn-danger-ghost" (click)="deleteTask(item)">
+                    Delete
+                </button>
+            </div>
+
+        </div>
+
+    } @empty {
+
+        <div class="empty-state">
+            <p class="empty-title">No tasks yet</p>
+            <p class="empty-body">Add your first task above to start planning.</p>
+        </div>
+
+    }
+
+</div>

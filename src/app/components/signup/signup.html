@@ -1,0 +1,39 @@
+<div class="signup-container">
+
+    <h1>Create Account</h1>
+
+    <input
+        type="email"
+        placeholder="Email"
+        [(ngModel)]="email"
+    >
+
+    <input
+        type="password"
+        placeholder="Password"
+        [(ngModel)]="password"
+    >
+
+    <button (click)="signup()">
+        Sign Up
+    </button>
+
+
+    @if (message) {
+
+        <p class="success">
+            {{ message }}
+        </p>
+
+    }
+
+
+    @if (errorMessage) {
+
+        <p class="error">
+            {{ errorMessage }}
+        </p>
+
+    }
+
+</div>

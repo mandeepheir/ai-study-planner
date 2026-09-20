@@ -1,1 +1,283 @@
-<p>progress works!</p>
+<div class="progress-container">
+
+    <div class="progress-header">
+
+        <h1>Study Progress</h1>
+
+        <p>
+            Track your overall performance and see how you are progressing across different types of tasks.
+        </p>
+
+    </div>
+
+
+    <!-- OVERALL PROGRESS -->
+
+    <section class="overall-progress">
+
+        <h2>Overall Completion</h2>
+
+        <div class="progress-bar">
+
+            <div
+                class="progress-fill"
+                [style.width.%]="completionRate">
+            </div>
+
+        </div>
+
+        <div class="completion-percentage">
+            {{ completionRate }}%
+        </div>
+
+    </section>
+
+
+    <!-- STATISTICS -->
+
+    <div class="progress-stats">
+
+        <div class="stat-card">
+
+            <span class="stat-label">
+                Total Tasks
+            </span>
+
+            <strong>
+                {{ totalTasks }}
+            </strong>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span class="stat-label">
+                Completed
+            </span>
+
+            <strong>
+                {{ completedTasks }}
+            </strong>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span class="stat-label">
+                Pending
+            </span>
+
+            <strong>
+                {{ pendingTasks }}
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- PROGRESS MESSAGE -->
+
+    @if (totalTasks === 0) {
+
+        <div class="progress-message">
+
+            <div class="message-icon">
+                📚
+            </div>
+
+            <h3>
+                Start Tracking Your Progress
+            </h3>
+
+            <p>
+                Add some study tasks to begin tracking your progress.
+            </p>
+
+        </div>
+
+    } @else if (completionRate === 100) {
+
+        <div class="progress-message">
+
+            <div class="message-icon">
+                🎉
+            </div>
+
+            <h3>
+                All Tasks Completed!
+            </h3>
+
+            <p>
+                Excellent work. You have completed everything.
+            </p>
+
+        </div>
+
+    } @else if (completionRate >= 75) {
+
+        <div class="progress-message">
+
+            <div class="message-icon">
+                🔥
+            </div>
+
+            <h3>
+                Excellent Progress
+            </h3>
+
+            <p>
+                You are almost finished. Keep pushing.
+            </p>
+
+        </div>
+
+    } @else if (completionRate >= 50) {
+
+        <div class="progress-message">
+
+            <div class="message-icon">
+                💪
+            </div>
+
+            <h3>
+                Good Progress
+            </h3>
+
+            <p>
+                You are halfway there. Keep going.
+            </p>
+
+        </div>
+
+    } @else {
+
+        <div class="progress-message">
+
+            <div class="message-icon">
+                🎯
+            </div>
+
+            <h3>
+                Keep Building Momentum
+            </h3>
+
+            <p>
+                Focus on your highest-priority pending tasks.
+            </p>
+
+        </div>
+
+    }
+
+
+    <!-- CATEGORY ANALYTICS -->
+
+    @if (categoryProgress.length > 0) {
+
+        <section class="category-section">
+
+            <div class="section-header">
+
+                <h2>
+                    Progress by Category
+                </h2>
+
+                <p>
+                    See how well you are performing in each type of study task.
+                </p>
+
+            </div>
+
+
+            <div class="category-grid">
+
+                @for (
+                    category of categoryProgress;
+                    track category.category
+                ) {
+
+                    <div class="category-card">
+
+                        <div class="category-top">
+
+                            <h3>
+                                {{ category.category }}
+                            </h3>
+
+                            <strong>
+                                {{ category.completionRate }}%
+                            </strong>
+
+                        </div>
+
+
+                        <!-- CATEGORY PROGRESS BAR -->
+
+                        <div class="category-progress-bar">
+
+                            <div
+                                class="category-progress-fill"
+                                [style.width.%]="category.completionRate">
+                            </div>
+
+                        </div>
+
+
+                        <!-- CATEGORY STATS -->
+
+                        <div class="category-stats">
+
+                            <div>
+
+                                <span>
+                                    Total
+                                </span>
+
+                                <strong>
+                                    {{ category.total }}
+                                </strong>
+
+                            </div>
+
+
+                            <div>
+
+                                <span>
+                                    Completed
+                                </span>
+
+                                <strong>
+                                    {{ category.completed }}
+                                </strong>
+
+                            </div>
+
+
+                            <div>
+
+                                <span>
+                                    Pending
+                                </span>
+
+                                <strong>
+                                    {{ category.pending }}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                }
+
+            </div>
+
+        </section>
+
+    }
+
+</div>

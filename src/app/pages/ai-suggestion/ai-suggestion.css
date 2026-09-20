@@ -1,0 +1,486 @@
+/* ========================================= */
+/* AI CONTAINER */
+/* ========================================= */
+
+.ai-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 40px auto;
+}
+
+
+/* ========================================= */
+/* HEADER */
+/* ========================================= */
+
+.ai-header {
+    margin-bottom: 35px;
+}
+
+.ai-header h1 {
+    margin: 0 0 8px;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.ai-description {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+
+/* ========================================= */
+/* SECTIONS */
+/* ========================================= */
+
+.dashboard-section {
+    margin-top: 40px;
+}
+
+.dashboard-section h2 {
+    margin: 0 0 8px;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.section-description {
+    margin: 0 0 20px;
+    color: var(--text-muted);
+}
+
+
+/* ========================================= */
+/* WORKLOAD OVERVIEW */
+/* ========================================= */
+
+.overview-card {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.overview-item {
+    padding: 20px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.overview-label {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.overview-item strong {
+    font-size: 24px;
+}
+
+.overview-item.workload-light {
+    border-left: 4px solid var(--text-success);
+}
+
+.overview-item.workload-light strong {
+    color: var(--text-success);
+}
+
+.overview-item.workload-moderate {
+    border-left: 4px solid var(--text-warning);
+}
+
+.overview-item.workload-moderate strong {
+    color: var(--text-warning);
+}
+
+.overview-item.workload-heavy {
+    border-left: 4px solid var(--text-danger);
+}
+
+.overview-item.workload-heavy strong {
+    color: var(--text-danger);
+}
+
+
+/* ========================================= */
+/* SMART STUDY SESSION */
+/* ========================================= */
+
+.session-card {
+    padding: 24px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+}
+
+.session-description {
+    margin: 0 0 20px;
+    color: var(--text-muted);
+}
+
+.time-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.session-result {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--card-border);
+}
+
+.session-result h3 {
+    margin: 0 0 18px;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.session-empty {
+    padding: 14px;
+    background-color: var(--bg);
+    border-radius: 8px;
+    color: var(--text-muted);
+}
+
+.session-task {
+    display: flex;
+    gap: 14px;
+    padding: 16px;
+    margin-top: 14px;
+    background-color: var(--bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+}
+
+.session-task-number {
+    min-width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background-color: var(--btn-bg);
+    color: var(--btn-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.session-task-content {
+    flex: 1;
+}
+
+.session-task-content h4 {
+    margin: 0 0 6px;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.session-task-content > p {
+    margin: 4px 0;
+    line-height: 1.5;
+}
+
+
+/* ========================================= */
+/* TASK META */
+/* ========================================= */
+
+.task-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.task-meta strong {
+    color: var(--text);
+}
+
+
+/* ========================================= */
+/* PRIORITY BADGES */
+/* ========================================= */
+
+.priority-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    margin-top: 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.priority-badge.high {
+    background-color: var(--bg-danger);
+    color: var(--text-danger);
+}
+
+.priority-badge.medium {
+    background-color: var(--bg-warning);
+    color: var(--text-warning);
+}
+
+.priority-badge.low {
+    background-color: var(--bg-success);
+    color: var(--text-success);
+}
+
+
+/* ========================================= */
+/* AI REASON */
+/* ========================================= */
+
+.ai-reason {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background-color: var(--bg);
+    border-left: 3px solid var(--btn-bg);
+    border-radius: 6px;
+}
+
+.ai-reason strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--text);
+    font-size: 13px;
+}
+
+.ai-reason p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+
+/* ========================================= */
+/* SESSION TOTAL */
+/* ========================================= */
+
+.session-total {
+    margin-top: 18px;
+    padding: 14px;
+    background-color: var(--bg);
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+
+/* ========================================= */
+/* AI RECOMMENDATIONS */
+/* ========================================= */
+
+.recommendations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.suggestion-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+}
+
+.suggestion-card p {
+    margin: 0;
+    line-height: 1.6;
+}
+
+.suggestion-number {
+    min-width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: var(--btn-bg);
+    color: var(--btn-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+
+/* ========================================= */
+/* DAILY PLAN */
+/* ========================================= */
+
+.plan-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 20px;
+}
+
+.plan-card {
+    display: flex;
+    gap: 16px;
+    padding: 18px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+}
+
+.plan-number {
+    min-width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background-color: var(--btn-bg);
+    color: var(--btn-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.plan-content {
+    flex: 1;
+}
+
+.plan-content h3 {
+    margin: 0 0 6px;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.task-description {
+    margin: 0;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+
+/* ========================================= */
+/* PRIORITIZED TASKS */
+/* ========================================= */
+
+.priority-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 20px;
+}
+
+.priority-card {
+    padding: 20px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+}
+
+.priority-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.priority-card-header h3 {
+    margin: 0 0 6px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.priority-card-header p {
+    margin: 0;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+
+/* ========================================= */
+/* EMPTY STATE */
+/* ========================================= */
+
+.empty-card {
+    padding: 36px 24px;
+    margin-top: 20px;
+    background-color: var(--card-bg);
+    border: 1px dashed var(--card-border);
+    border-radius: 12px;
+    text-align: center;
+}
+
+.empty-icon {
+    width: 32px;
+    height: 32px;
+    margin: 0 auto 10px;
+    color: var(--text-muted);
+}
+
+.empty-card h3 {
+    margin: 0 0 8px;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.empty-card p {
+    margin: 0;
+    color: var(--text-muted);
+}
+
+
+/* ========================================= */
+/* TABLET */
+/* ========================================= */
+
+@media (max-width: 900px) {
+
+    .overview-card {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+
+/* ========================================= */
+/* MOBILE */
+/* ========================================= */
+
+@media (max-width: 600px) {
+
+    .ai-container {
+        width: 94%;
+        margin-top: 25px;
+    }
+
+    .ai-header h1 {
+        font-size: 26px;
+    }
+
+    .overview-card {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .time-buttons {
+        flex-direction: column;
+    }
+
+    .time-buttons button {
+        width: 100%;
+    }
+
+    .task-meta {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .priority-card-header {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+}

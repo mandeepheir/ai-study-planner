@@ -1,0 +1,262 @@
+/* ========================================= */
+/* NAVIGATION BAR */
+/* ========================================= */
+
+nav {
+    width: 100%;
+
+    background: #1e293b;
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 25px;
+
+    padding: 14px 30px;
+
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+}
+
+
+/* ========================================= */
+/* LOGO */
+/* ========================================= */
+
+.logo {
+    font-size: 22px;
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    letter-spacing: 0.3px;
+}
+
+
+/* ========================================= */
+/* NAVIGATION LINKS */
+/* ========================================= */
+
+ul {
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+
+    list-style: none;
+
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    margin: 0;
+}
+
+ul a {
+    display: block;
+
+    padding: 8px 12px;
+
+    border-radius: 7px;
+
+    color: #e5e7eb;
+
+    text-decoration: none;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+ul a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+
+/* ========================================= */
+/* AUTH SECTION */
+/* ========================================= */
+
+.auth-buttons {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    white-space: nowrap;
+}
+
+.user-email {
+    max-width: 220px;
+
+    margin-right: 5px;
+
+    font-size: 13px;
+
+    color: #cbd5e1;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* ========================================= */
+/* LOGIN / SIGN UP LINKS */
+/* ========================================= */
+
+.auth-buttons a {
+    padding: 8px 13px;
+
+    border-radius: 7px;
+
+    color: #e5e7eb;
+
+    text-decoration: none;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+.auth-buttons a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+
+/* ========================================= */
+/* BUTTONS */
+/* ========================================= */
+
+nav button {
+    padding: 8px 14px;
+
+    border: none;
+    border-radius: 7px;
+
+    background: #f8fafc;
+    color: #1e293b;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    transition:
+        transform 0.2s ease,
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+nav button:hover {
+    background: white;
+
+    transform: translateY(-1px);
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+nav button:active {
+    transform: translateY(0);
+}
+
+
+/* ========================================= */
+/* MOBILE */
+/* ========================================= */
+
+@media (max-width: 900px) {
+
+    nav {
+        flex-wrap: wrap;
+        justify-content: center;
+
+        padding: 14px 20px;
+    }
+
+    .logo {
+        width: 100%;
+        text-align: center;
+    }
+
+    ul {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .auth-buttons {
+        justify-content: center;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    nav {
+        flex-direction: column;
+
+        gap: 12px;
+
+        padding: 14px 10px;
+    }
+
+    .logo {
+        font-size: 19px;
+    }
+
+    ul {
+        flex-direction: column;
+
+        width: 100%;
+
+        gap: 4px;
+    }
+
+    ul li {
+        width: 100%;
+    }
+
+    ul a {
+        width: 100%;
+
+        text-align: center;
+
+        padding: 9px;
+    }
+
+    .auth-buttons {
+        flex-direction: column;
+
+        width: 100%;
+    }
+
+    .auth-buttons a,
+    nav button {
+        width: 100%;
+        max-width: 280px;
+
+        text-align: center;
+    }
+
+    .user-email {
+        max-width: 90%;
+        margin: 0;
+    }
+
+}
