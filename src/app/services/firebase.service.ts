@@ -1,7 +1,12 @@
 
 import { Injectable, inject } from '@angular/core';
 
-import { Auth } from '@angular/fire/auth';
+import {
+  Auth,
+  authState
+} from '@angular/fire/auth';
+
+import { firstValueFrom } from 'rxjs';
 
 import {
   Firestore,
@@ -41,17 +46,43 @@ export class FirebaseService {
     'tasks'
   );
 
-  // Get the signed-in user's Firebase ID token
+  // Wait for Firebase to restore the signed-in user's state,
+  // then get the user's Firebase ID token.
   async getIdToken(): Promise<string> {
-    const currentUser = this.auth.currentUser;
+    const user = await firstValueFrom(
+      authState(this.auth)
+    );
 
-    if (!currentUser) {
+    if (!user) {
       throw new Error(
-        'No user is currently logged in.'
+        'Firebase has no authenticated user. Please sign in again.'
       );
     }
 
-    return currentUser.getIdToken();
+    return user.getIdToken();
+  }
+
+  // Test Firebase authentication with the Node.js backend
+  async testBackendAuth(): Promise<any> {
+    const token = await this.getIdToken();
+
+    const response = await fetch(
+      'http://localhost:3000/api/protected',
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Backend request failed: ${response.status}`
+      );
+    }
+
+    return response.json();
   }
 
   // Add a new task for the logged-in user

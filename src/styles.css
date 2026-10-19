@@ -1,230 +1,262 @@
-/* ========================================= */
-/* COLOR SYSTEM (CSS VARIABLES)               */
-/* ========================================= */
+/* =========================================================
+   JOBTRACK — GLOBAL STYLES  (src/styles.css)
+   Replaces your old style.css.
+   - New Apple-style tokens (--color-*)
+   - Your old variable names (--bg, --text, --card-bg ...) still work
+   - body.dark-mode still works; dark also follows the system
+   ========================================================= */
 
+/* ---------- 1. Palette (light) ---------- */
 :root {
-    --bg: #f5f7fb;
-    --text: #1f2937;
-    --text-muted: #6b7280;
+  color-scheme: light dark;
 
-    --card-bg: #ffffff;
-    --card-border: #e5e7eb;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+    "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-display: var(--font-sans);
+  --font-mono: var(--font-sans);
 
-    --input-bg: #ffffff;
-    --input-border: #d1d5db;
+  --color-bg: #f5f5f7;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f5f5f7;
+  --color-fill: rgba(120, 120, 128, 0.12);
 
-    --btn-bg: #1f2937;
-    --btn-text: #ffffff;
-    --btn-bg-hover: #374151;
+  --color-border: rgba(0, 0, 0, 0.08);
+  --color-border-light: rgba(0, 0, 0, 0.05);
+  --color-border-strong: rgba(0, 0, 0, 0.16);
 
-    --focus-ring: #3b82f6;
+  --color-text: #1d1d1f;
+  --color-text-secondary: #515154;
+  --color-text-muted: #6e6e73;
+  --color-text-faint: #a1a1a6;
 
-    --selection-bg: #dbeafe;
-    --selection-text: #111827;
+  --color-primary: #0071e3;
+  --color-primary-hover: #0077ed;
+  --color-accent: #0071e3;
+  --color-accent-bg: rgba(0, 113, 227, 0.1);
+  --color-info: #0071e3;
+  --color-info-bg: rgba(0, 113, 227, 0.1);
+  --color-warning: #b25000;
+  --color-warning-bg: rgba(255, 159, 10, 0.18);
+  --color-success: #248a3d;
+  --color-success-bg: rgba(52, 199, 89, 0.16);
+  --color-danger: #d70015;
+  --color-danger-bg: rgba(255, 59, 48, 0.12);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.18);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 30px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 24px 70px rgba(0, 0, 0, 0.12);
+
+  --transition-fast: all 0.2s ease;
+  --bg-navbar: rgba(245, 245, 247, 0.8);
+  --container-max-width: 1080px;
 }
 
+/* ---------- 2. Palette (dark) ----------
+   Applies when: the system is dark, OR <body class="dark-mode">,
+   OR <html data-theme="dark">. Force light with data-theme="light". */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg: #000000;
+    --color-surface: #1c1c1e;
+    --color-surface-muted: #2c2c2e;
+    --color-fill: rgba(120, 120, 128, 0.28);
+    --color-border: rgba(255, 255, 255, 0.1);
+    --color-border-light: rgba(255, 255, 255, 0.06);
+    --color-border-strong: rgba(255, 255, 255, 0.2);
+    --color-text: #f5f5f7;
+    --color-text-secondary: #d1d1d6;
+    --color-text-muted: #a1a1a6;
+    --color-text-faint: #6e6e73;
+    --color-primary: #0a84ff;
+    --color-primary-hover: #409cff;
+    --color-accent: #0a84ff;
+    --color-accent-bg: rgba(10, 132, 255, 0.18);
+    --color-info: #0a84ff;
+    --color-info-bg: rgba(10, 132, 255, 0.18);
+    --color-warning: #ff9f0a;
+    --color-warning-bg: rgba(255, 159, 10, 0.2);
+    --color-success: #30d158;
+    --color-success-bg: rgba(48, 209, 88, 0.18);
+    --color-danger: #ff453a;
+    --color-danger-bg: rgba(255, 69, 58, 0.18);
+    --shadow-card: none;
+    --shadow-lg: 0 24px 70px rgba(0, 0, 0, 0.6);
+    --bg-navbar: rgba(0, 0, 0, 0.72);
+  }
+}
+
+:root[data-theme="dark"],
 body.dark-mode {
-    --bg: #121212;
-    --text: #ffffff;
-    --text-muted: #aaaaaa;
-
-    --card-bg: #1e1e1e;
-    --card-border: #444444;
-
-    --input-bg: #2a2a2a;
-    --input-border: #555555;
-
-    --btn-bg: #333333;
-    --btn-text: #ffffff;
-    --btn-bg-hover: #444444;
-
-    --focus-ring: #60a5fa;
+  --color-bg: #000000;
+  --color-surface: #1c1c1e;
+  --color-surface-muted: #2c2c2e;
+  --color-fill: rgba(120, 120, 128, 0.28);
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-light: rgba(255, 255, 255, 0.06);
+  --color-border-strong: rgba(255, 255, 255, 0.2);
+  --color-text: #f5f5f7;
+  --color-text-secondary: #d1d1d6;
+  --color-text-muted: #a1a1a6;
+  --color-text-faint: #6e6e73;
+  --color-primary: #0a84ff;
+  --color-primary-hover: #409cff;
+  --color-accent: #0a84ff;
+  --color-accent-bg: rgba(10, 132, 255, 0.18);
+  --color-info: #0a84ff;
+  --color-info-bg: rgba(10, 132, 255, 0.18);
+  --color-warning: #ff9f0a;
+  --color-warning-bg: rgba(255, 159, 10, 0.2);
+  --color-success: #30d158;
+  --color-success-bg: rgba(48, 209, 88, 0.18);
+  --color-danger: #ff453a;
+  --color-danger-bg: rgba(255, 69, 58, 0.18);
+  --shadow-card: none;
+  --shadow-lg: 0 24px 70px rgba(0, 0, 0, 0.6);
+  --bg-navbar: rgba(0, 0, 0, 0.72);
 }
 
+/* ---------- 3. Aliases ----------
+   Declared on <body> (not :root) so they follow dark mode correctly.
+   Your old variable names and the navbar names map to the new palette. */
+body {
+  --bg: var(--color-bg);
+  --text: var(--color-text);
+  --text-muted: var(--color-text-muted);
+  --card-bg: var(--color-surface);
+  --card-border: var(--color-border);
+  --input-bg: var(--color-fill);
+  --input-border: transparent;
+  --btn-bg: var(--color-primary);
+  --btn-text: #ffffff;
+  --btn-bg-hover: var(--color-primary-hover);
+  --focus-ring: var(--color-accent);
+  --selection-bg: var(--color-accent-bg);
+  --selection-text: var(--color-text);
 
-/* ========================================= */
-/* GLOBAL STYLES */
-/* ========================================= */
+  --border-color: var(--color-border);
+  --border-hover: var(--color-border-strong);
+  --text-primary: var(--color-text);
+  --text-button: var(--color-accent);
+  --primary-accent: var(--color-accent);
+  --hover-bg: var(--color-fill);
+  --button-hover-bg: var(--color-fill);
+}
 
-* {
-    box-sizing: border-box;
+/* ---------- 4. Base ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 html {
-    scroll-behavior: smooth;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-    margin: 0;
-    padding: 0;
-
-    font-family: Arial, Helvetica, sans-serif;
-
-    background-color: var(--bg);
-    color: var(--text);
-
-    line-height: 1.5;
-
-    transition:
-        background-color 0.25s ease,
-        color 0.25s ease;
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.47;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-h1, h2, h3, h4, h5, h6, p {
-    margin: 0 0 0.75em;
+/* :where() keeps these defaults at zero specificity,
+   so any component stylesheet can override them freely. */
+:where(h1, h2, h3, h4, h5, h6, p) {
+  margin: 0 0 0.75em;
 }
 
-
-/* ========================================= */
-/* LINKS */
-/* ========================================= */
-
-a {
-    color: inherit;
-    text-decoration: none;
+:where(a) {
+  color: inherit;
+  text-decoration: none;
 }
 
-
-/* ========================================= */
-/* BUTTONS */
-/* ========================================= */
-
-button {
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-
-    background-color: var(--btn-bg);
-    color: var(--btn-text);
-    border: none;
-    border-radius: 8px;
-    padding: 10px 20px;
-
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease,
-        background-color 0.2s ease;
+/* Buttons: blue pill by default */
+:where(button) {
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: inherit;
+  cursor: pointer;
+  background-color: var(--btn-bg);
+  color: var(--btn-text);
+  border: 0;
+  border-radius: var(--radius-pill);
+  padding: 10px 20px;
+  transition: filter 0.15s ease, transform 0.1s ease;
 }
 
-button:hover {
-    background-color: var(--btn-bg-hover);
-    transform: translateY(-1px);
+:where(button:hover) {
+  filter: brightness(1.08);
 }
 
-button:active {
-    transform: translateY(0);
+:where(button:active) {
+  transform: scale(0.97);
 }
 
 .btn-primary {
-    background-color: var(--btn-bg);
-    color: var(--btn-text);
+  background-color: var(--btn-bg);
+  color: var(--btn-text);
 }
 
-.btn-primary:hover {
-    background-color: var(--btn-bg-hover);
+/* Fields: soft grey fill, blue ring on focus */
+:where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  select,
+  textarea
+) {
+  font-family: inherit;
+  font-size: 16px;
+  letter-spacing: inherit;
+  background-color: var(--input-bg);
+  color: var(--color-text);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-
-/* ========================================= */
-/* FORM ELEMENTS */
-/* ========================================= */
-
-input,
-select,
-textarea {
-    font-family: inherit;
-    font-size: 14px;
-
-    background-color: var(--input-bg);
-    color: var(--text);
-    border: 1px solid var(--input-border);
-    border-radius: 6px;
-    padding: 10px 12px;
+:where(input, select, textarea)::placeholder {
+  color: var(--color-text-faint);
 }
 
+:where(input:not([type="checkbox"]):not([type="radio"]), select, textarea):focus {
+  outline: none;
+  background-color: var(--color-surface);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 4px var(--color-accent-bg);
+}
 
-/* ========================================= */
-/* FOCUS STATES (ACCESSIBILITY)               */
-/* ========================================= */
-
+/* Keyboard focus */
 button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible,
 a:focus-visible {
-    outline: 2px solid var(--focus-ring);
-    outline-offset: 2px;
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
 }
-
-
-/* ========================================= */
-/* CARDS                                      */
-/* ========================================= */
-
-.task-card,
-.card,
-.suggestion-card,
-.overview-item,
-.plan-card,
-.session-card {
-    background-color: var(--card-bg);
-    color: var(--text);
-    border: 1px solid var(--card-border);
-    border-radius: 10px;
-}
-
-
-/* Smart Study Session */
-
-.session-task {
-    background-color: var(--bg);
-    color: var(--text);
-    border: 1px solid var(--card-border);
-}
-
-.session-total {
-    background-color: var(--card-border);
-    color: var(--text);
-}
-
-
-/* Text */
-
-.ai-description,
-.session-description,
-.overview-label {
-    color: var(--text-muted);
-}
-
-
-/* ========================================= */
-/* TEXT SELECTION */
-/* ========================================= */
 
 ::selection {
-    background-color: var(--selection-bg);
-    color: var(--selection-text);
+  background-color: var(--selection-bg);
+  color: var(--selection-text);
 }
 
-
-/* ========================================= */
-/* MOBILE */
-/* ========================================= */
-
-@media (max-width: 768px) {
-
-    body {
-        font-size: 15px;
-    }
-
-    .task-card,
-    .card,
-    .suggestion-card,
-    .overview-item,
-    .plan-card,
-    .session-card {
-        padding: 12px;
-    }
-
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
 }
