@@ -1,3 +1,4 @@
+
 import { Injectable, inject } from '@angular/core';
 
 import { Auth } from '@angular/fire/auth';
@@ -34,15 +35,27 @@ export class FirebaseService {
   // Connect to Firebase Authentication
   private auth = inject(Auth);
 
-  // Reference to the "tasks" collection
+  // Reference to the tasks collection
   private tasksCollection = collection(
     this.firestore,
     'tasks'
   );
 
-  // Add a new task
-  addTask(task: StudyTask) {
+  // Get the signed-in user's Firebase ID token
+  async getIdToken(): Promise<string> {
+    const currentUser = this.auth.currentUser;
 
+    if (!currentUser) {
+      throw new Error(
+        'No user is currently logged in.'
+      );
+    }
+
+    return currentUser.getIdToken();
+  }
+
+  // Add a new task for the logged-in user
+  addTask(task: StudyTask) {
     const currentUser = this.auth.currentUser;
 
     if (!currentUser) {
@@ -64,7 +77,6 @@ export class FirebaseService {
 
   // Get tasks belonging to the logged-in user
   getTasks() {
-
     const currentUser = this.auth.currentUser;
 
     if (!currentUser) {
@@ -95,7 +107,6 @@ export class FirebaseService {
     taskId: string,
     completed: boolean
   ) {
-
     const taskDocument = doc(
       this.firestore,
       'tasks',
@@ -111,24 +122,18 @@ export class FirebaseService {
   }
 
   // Delete a task
-  deleteTask(
-    taskId: string
-  ) {
-
+  deleteTask(taskId: string) {
     const taskDocument = doc(
       this.firestore,
       'tasks',
       taskId
     );
 
-    return deleteDoc(
-      taskDocument
-    );
+    return deleteDoc(taskDocument);
   }
 
   // Test Firestore connection
   testFirestore() {
-
     return addDoc(
       this.tasksCollection,
       {
@@ -140,5 +145,4 @@ export class FirebaseService {
       }
     );
   }
-
 }
