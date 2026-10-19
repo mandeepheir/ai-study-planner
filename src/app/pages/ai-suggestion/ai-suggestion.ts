@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
 
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { FirebaseService } from '../../services/firebase.service';
-
 
 interface StudyTask {
   id?: string;
@@ -10,6 +11,7 @@ interface StudyTask {
   category: string;
   deadline: string;
   completed: boolean;
+  userId?: string;
 }
 
 interface Suggestion {
@@ -17,267 +19,186 @@ interface Suggestion {
   level: 'info' | 'danger' | 'warning' | 'success';
 }
 
-
 @Component({
   selector: 'app-ai-suggestion',
   standalone: true,
-  imports: [],
+  imports: [FormsModule],
   templateUrl: './ai-suggestion.html',
   styleUrl: './ai-suggestion.css'
 })
-export class AiSuggestion implements OnInit {
-
-  // =========================================================
-  // AI SUGGESTIONS
-  // =========================================================
-
+export class AiSuggestion implements OnInit, OnDestroy {
   suggestions: Suggestion[] = [];
 
+  // Personalized study plan
+  aiStudyPlan = '';
+  aiStudyGoals =
+    'Prepare for upcoming deadlines and improve understanding of difficult topics.';
+  aiAvailableHours = 3;
+  isGeneratingStudyPlan = false;
+  studyPlanError = '';
 
-  // =========================================================
-  // PENDING TASKS
-  // =========================================================
-
+  // Task and workload information
   pendingTasks: StudyTask[] = [];
-
-
-  // =========================================================
-  // WORKLOAD
-  // =========================================================
-
   workloadLevel = '';
-
-
-  // =========================================================
-  // STUDY TIME
-  // =========================================================
-
   estimatedStudyHours = 0;
-
-
-  // =========================================================
-  // DAILY PLAN
-  // =========================================================
-
   dailyPlan: StudyTask[] = [];
 
-
-  // =========================================================
-  // SMART STUDY SESSION
-  // =========================================================
-
+  // Study session information
   selectedStudyMinutes = 0;
-
   sessionTasks: StudyTask[] = [];
-
   sessionStudyMinutes = 0;
 
+  private tasksSubscription?: Subscription;
 
   constructor(
     private firebaseService: FirebaseService
   ) {}
 
-
-  // =========================================================
-  // INITIALIZE AI ANALYSIS
-  // =========================================================
-
   ngOnInit(): void {
+    this.loadTasks();
+  }
 
-    this.firebaseService.getTasks().subscribe({
+  ngOnDestroy(): void {
+    this.tasksSubscription?.unsubscribe();
+  }
 
-      next: (tasks: any[]) => {
-
-        const studyTasks =
-          tasks as StudyTask[];
-
-        this.pendingTasks =
-          studyTasks
-            .filter(task => !task.completed)
-            .sort((a, b) => {
-              return (
+  // Load the signed-in user's tasks from Firestore.
+  private loadTasks(): void {
+    try {
+      this.tasksSubscription =
+        this.firebaseService.getTasks().subscribe({
+          next: (tasks: any[]) => {
+            this.pendingTasks = (tasks as StudyTask[])
+              .filter(task => !task.completed)
+              .sort((a, b) =>
                 this.calculatePriorityScore(b) -
                 this.calculatePriorityScore(a)
               );
-            });
 
-        this.workloadLevel =
-          this.calculateWorkloadLevel(this.pendingTasks);
+            this.workloadLevel =
+              this.calculateWorkloadLevel(this.pendingTasks);
 
-        this.estimatedStudyHours =
-          this.calculateStudyTime(this.pendingTasks);
+            this.estimatedStudyHours =
+              this.calculateStudyTime(this.pendingTasks);
 
-        this.dailyPlan =
-          this.createDailyPlan(this.pendingTasks);
+            this.dailyPlan =
+              this.createDailyPlan(this.pendingTasks);
 
-        this.generateSuggestions(this.pendingTasks);
-
-      },
-
-      error: (error) => {
-        console.error('Failed to load tasks for AI:', error);
-      }
-
-    });
-
+            this.generateSuggestions(this.pendingTasks);
+          },
+          error: error => {
+            console.error('Failed to load tasks:', error);
+            this.studyPlanError =
+              'Unable to load your tasks. Please check your connection and sign in again.';
+          }
+        });
+    } catch (error) {
+      console.error('Unable to subscribe to Firestore tasks:', error);
+      this.studyPlanError =
+        'Please sign in before loading your study tasks.';
+    }
   }
 
-
-  // =========================================================
-  // SMART STUDY SESSION
-  // =========================================================
-
+  // Select tasks that fit inside the chosen study session.
   createStudySession(minutes: number): void {
-
     this.selectedStudyMinutes = minutes;
     this.sessionTasks = [];
     this.sessionStudyMinutes = 0;
 
-    if (this.pendingTasks.length === 0) {
-      return;
-    }
-
     for (const task of this.pendingTasks) {
-
       const taskMinutes = this.getTaskStudyMinutes(task);
 
       if (this.sessionStudyMinutes + taskMinutes <= minutes) {
         this.sessionTasks.push(task);
         this.sessionStudyMinutes += taskMinutes;
       }
-
-      if (this.sessionStudyMinutes >= minutes) {
-        break;
-      }
-
     }
-
   }
 
-
-  // =========================================================
-  // GET STUDY TIME FOR ONE TASK
-  // =========================================================
-
+  // Estimate time based on task category.
   getTaskStudyMinutes(task: StudyTask): number {
+    const studyMinutes: Record<string, number> = {
+      Exam: 120,
+      Project: 180,
+      Assignment: 90,
+      Quiz: 45
+    };
 
-    if (task.category === 'Exam') {
-      return 120;
-    }
-
-    if (task.category === 'Project') {
-      return 180;
-    }
-
-    if (task.category === 'Assignment') {
-      return 90;
-    }
-
-    if (task.category === 'Quiz') {
-      return 45;
-    }
-
-    return 60;
-
+    return studyMinutes[task.category] ?? 60;
   }
 
-
-  // =========================================================
-  // GENERATE PERSONALIZED RECOMMENDATIONS
-  // =========================================================
-
+  // Create helpful rule-based recommendations.
   private generateSuggestions(tasks: StudyTask[]): void {
-
     this.suggestions = [];
 
-
-    // NO PENDING TASKS
-
     if (tasks.length === 0) {
-
       this.suggestions.push({
         text: 'You have no pending tasks. Great job staying on track.',
         level: 'success'
       });
-
       return;
-
     }
-
-
-    // TOP PRIORITY TASK
 
     const topTask = tasks[0];
 
     this.suggestions.push({
-      text: `Start with ${topTask.subject}: "${topTask.task}". It has the highest priority score of ${this.calculatePriorityScore(topTask)}.`,
+      text:
+        `Start with ${topTask.subject}: "${topTask.task}". ` +
+        `It has the highest priority score of ${this.calculatePriorityScore(topTask)}.`,
       level: 'info'
     });
-
-
-    // WORKLOAD RECOMMENDATION
 
     if (this.workloadLevel === 'Heavy') {
-
       this.suggestions.push({
-        text: `Your workload is heavy with ${tasks.length} pending tasks. Avoid multitasking and complete the highest-priority tasks first.`,
+        text:
+          `Your workload is heavy with ${tasks.length} pending tasks. ` +
+          'Focus on the highest-priority tasks first.',
         level: 'danger'
       });
-
     } else if (this.workloadLevel === 'Moderate') {
-
       this.suggestions.push({
-        text: `Your workload is moderate with ${tasks.length} pending tasks. Create focused study sessions and work through your highest-priority tasks.`,
+        text:
+          `Your workload is moderate with ${tasks.length} pending tasks. ` +
+          'Use focused study sessions.',
         level: 'warning'
       });
-
     } else {
-
       this.suggestions.push({
-        text: `Your workload is light with ${tasks.length} pending tasks. Use the available time to stay ahead of your deadlines.`,
+        text:
+          `Your workload is light with ${tasks.length} pending tasks. ` +
+          'Use the extra time to prepare for upcoming deadlines.',
         level: 'success'
       });
-
     }
 
-
-    // TOTAL STUDY TIME
-
     this.suggestions.push({
-      text: `Your current pending workload requires approximately ${this.estimatedStudyHours} hour(s) of study time.`,
+      text:
+        `Your pending tasks require approximately ${this.estimatedStudyHours} hours of study time.`,
       level: 'info'
     });
 
-
-    // OVERDUE TASKS
-
-    const overdueTasks = tasks.filter(task => this.calculateDaysLeft(task) < 0);
+    const overdueTasks = tasks.filter(
+      task => this.calculateDaysLeft(task) < 0
+    );
 
     if (overdueTasks.length > 0) {
-
       this.suggestions.push({
-        text: `You have ${overdueTasks.length} overdue task(s). Complete these before starting lower-priority work.`,
+        text:
+          `You have ${overdueTasks.length} overdue task(s). Prioritize these tasks.`,
         level: 'danger'
       });
-
     }
 
-
-    // TASKS DUE TODAY
-
-    const todayTasks = tasks.filter(task => this.calculateDaysLeft(task) === 0);
+    const todayTasks = tasks.filter(
+      task => this.calculateDaysLeft(task) === 0
+    );
 
     if (todayTasks.length > 0) {
-
       this.suggestions.push({
-        text: `${todayTasks.length} task(s) are due today. These should be part of your first study session.`,
+        text: `${todayTasks.length} task(s) are due today.`,
         level: 'warning'
       });
-
     }
-
-
-    // UPCOMING TASKS
 
     const upcomingTasks = tasks.filter(task => {
       const days = this.calculateDaysLeft(task);
@@ -285,60 +206,35 @@ export class AiSuggestion implements OnInit {
     });
 
     if (upcomingTasks.length > 0) {
-
       this.suggestions.push({
-        text: `${upcomingTasks.length} task(s) are due within 3 days. Start preparing for them after handling today's urgent work.`,
+        text: `${upcomingTasks.length} task(s) are due within three days.`,
         level: 'info'
       });
-
     }
-
   }
 
-
-  // =========================================================
-  // ESTIMATE TOTAL STUDY TIME
-  // =========================================================
-
+  // Estimate the total study time for all pending tasks.
   calculateStudyTime(tasks: StudyTask[]): number {
-
-    let totalMinutes = 0;
-
-    tasks.forEach(task => {
-      totalMinutes += this.getTaskStudyMinutes(task);
-    });
+    const totalMinutes = tasks.reduce(
+      (total, task) =>
+        total + this.getTaskStudyMinutes(task),
+      0
+    );
 
     return Number((totalMinutes / 60).toFixed(1));
-
   }
 
-
-  // =========================================================
-  // CREATE SMART DAILY PLAN
-  // =========================================================
-
+  // Choose the three highest-priority tasks for the daily overview.
   createDailyPlan(tasks: StudyTask[]): StudyTask[] {
-
-    const maximumTasksPerDay = 3;
-
-    const sortedTasks = [...tasks].sort((a, b) => {
-      return (
+    return [...tasks]
+      .sort((a, b) =>
         this.calculatePriorityScore(b) -
         this.calculatePriorityScore(a)
-      );
-    });
-
-    return sortedTasks.slice(0, maximumTasksPerDay);
-
+      )
+      .slice(0, 3);
   }
 
-
-  // =========================================================
-  // ANALYZE OVERALL WORKLOAD
-  // =========================================================
-
   calculateWorkloadLevel(tasks: StudyTask[]): string {
-
     const pendingCount = tasks.length;
 
     const urgentCount = tasks.filter(
@@ -349,109 +245,97 @@ export class AiSuggestion implements OnInit {
       task => this.calculateDaysLeft(task) < 0
     ).length;
 
-    if (pendingCount >= 7 || urgentCount >= 4 || overdueCount >= 2) {
+    if (
+      pendingCount >= 7 ||
+      urgentCount >= 4 ||
+      overdueCount >= 2
+    ) {
       return 'Heavy';
     }
 
-    if (pendingCount >= 4 || urgentCount >= 2 || overdueCount >= 1) {
+    if (
+      pendingCount >= 4 ||
+      urgentCount >= 2 ||
+      overdueCount >= 1
+    ) {
       return 'Moderate';
     }
 
     return 'Light';
-
   }
-
-
-  // =========================================================
-  // CALCULATE PRIORITY SCORE
-  // =========================================================
 
   calculatePriorityScore(task: StudyTask): number {
-
     let score = this.calculateUrgency(task);
 
-    if (task.category === 'Exam') {
-      score += 25;
-    }
+    const categoryScores: Record<string, number> = {
+      Exam: 25,
+      Assignment: 20,
+      Project: 15,
+      Quiz: 10
+    };
 
-    if (task.category === 'Assignment') {
-      score += 20;
-    }
-
-    if (task.category === 'Project') {
-      score += 15;
-    }
-
-    if (task.category === 'Quiz') {
-      score += 10;
-    }
+    score += categoryScores[task.category] ?? 0;
 
     return score;
-
   }
-
-
-  // =========================================================
-  // CALCULATE URGENCY SCORE
-  // =========================================================
 
   calculateUrgency(task: StudyTask): number {
-
     const daysLeft = this.calculateDaysLeft(task);
 
-    if (daysLeft < 0) {
-      return 100;
-    }
-
-    if (daysLeft === 0) {
-      return 90;
-    }
-
-    if (daysLeft === 1) {
-      return 80;
-    }
-
-    if (daysLeft <= 3) {
-      return 70;
-    }
-
-    if (daysLeft <= 7) {
-      return 50;
-    }
+    if (daysLeft < 0) return 100;
+    if (daysLeft === 0) return 90;
+    if (daysLeft === 1) return 80;
+    if (daysLeft <= 3) return 70;
+    if (daysLeft <= 7) return 50;
 
     return 20;
-
   }
-
-
-  // =========================================================
-  // CALCULATE DAYS LEFT
-  // =========================================================
 
   calculateDaysLeft(task: StudyTask): number {
+    if (!task.deadline) {
+      return Number.POSITIVE_INFINITY;
+    }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(
+      task.deadline
+    );
 
-    const deadline = new Date(task.deadline);
-    deadline.setHours(0, 0, 0, 0);
+    if (!match) {
+      return Number.POSITIVE_INFINITY;
+    }
 
-    const difference = deadline.getTime() - today.getTime();
+    const year = Number(match[1]);
+    const month = Number(match[2]);
+    const day = Number(match[3]);
 
-    return Math.ceil(difference / (1000 * 60 * 60 * 24));
+    const deadlineDate = new Date(
+      Date.UTC(year, month - 1, day)
+    );
 
+    if (
+      deadlineDate.getUTCFullYear() !== year ||
+      deadlineDate.getUTCMonth() !== month - 1 ||
+      deadlineDate.getUTCDate() !== day
+    ) {
+      return Number.POSITIVE_INFINITY;
+    }
+
+    const now = new Date();
+    const today = Date.UTC(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
+
+    return Math.round(
+      (deadlineDate.getTime() - today) / 86400000
+    );
   }
 
-
-  // =========================================================
-  // CALCULATE PRIORITY LEVEL
-  // =========================================================
-
   calculatePriority(task: StudyTask): string {
-
     const daysLeft = this.calculateDaysLeft(task);
 
-    if (daysLeft < 0) {
+    if (daysLeft <= 0) {
       return 'HIGH';
     }
 
@@ -463,25 +347,18 @@ export class AiSuggestion implements OnInit {
       return 'HIGH';
     }
 
-    if (task.category === 'Quiz' && daysLeft <= 3) {
-      return 'MEDIUM';
-    }
-
-    if (task.category === 'Project' && daysLeft <= 7) {
+    if (
+      (task.category === 'Quiz' ||
+        task.category === 'Project') &&
+      daysLeft <= 7
+    ) {
       return 'MEDIUM';
     }
 
     return 'LOW';
-
   }
 
-
-  // =========================================================
-  // EXPLAIN WHY A TASK IS IMPORTANT
-  // =========================================================
-
   getTaskReason(task: StudyTask): string {
-
     const daysLeft = this.calculateDaysLeft(task);
 
     if (daysLeft < 0) {
@@ -489,31 +366,96 @@ export class AiSuggestion implements OnInit {
     }
 
     if (daysLeft === 0) {
-      return 'This task is due today, so it should be one of your first priorities.';
+      return 'This task is due today and should be a top priority.';
     }
 
     if (task.category === 'Exam' && daysLeft <= 7) {
-      return 'This is an upcoming exam, so it requires early preparation and consistent study.';
+      return 'This upcoming exam needs consistent preparation.';
     }
 
-    if (task.category === 'Assignment' && daysLeft <= 3) {
-      return 'This assignment is approaching quickly. Completing it early will reduce deadline pressure.';
+    if (
+      task.category === 'Assignment' &&
+      daysLeft <= 3
+    ) {
+      return 'This assignment is approaching quickly. Start early to reduce deadline pressure.';
     }
 
-    if (task.category === 'Quiz' && daysLeft <= 3) {
-      return 'This quiz is approaching soon. Review the relevant material before the deadline.';
+    if (
+      task.category === 'Quiz' &&
+      daysLeft <= 3
+    ) {
+      return 'Review the relevant material before the quiz deadline.';
     }
 
-    if (task.category === 'Project' && daysLeft <= 7) {
-      return 'This project requires more study time, so starting early is recommended.';
+    if (
+      task.category === 'Project' &&
+      daysLeft <= 7
+    ) {
+      return 'This project may require more time, so begin early.';
     }
 
     if (daysLeft <= 7) {
-      return 'This task has an upcoming deadline and should be included in your study schedule.';
+      return 'This task has an upcoming deadline and should be included in your schedule.';
     }
 
-    return 'This task has more time before its deadline, so you can work on it after urgent tasks.';
-
+    return 'Work on this task after handling more urgent deadlines.';
   }
 
+  // Generate a plan using actual pending Firestore tasks.
+  async generateAIStudyPlan(): Promise<void> {
+    this.studyPlanError = '';
+    this.aiStudyPlan = '';
+
+    if (this.pendingTasks.length === 0) {
+      this.studyPlanError =
+        'Add at least one pending task before generating a plan.';
+      return;
+    }
+
+    if (
+      !Number.isFinite(this.aiAvailableHours) ||
+      this.aiAvailableHours <= 0 ||
+      this.aiAvailableHours > 24
+    ) {
+      this.studyPlanError =
+        'Enter study hours greater than 0 and no more than 24.';
+      return;
+    }
+
+    if (!this.aiStudyGoals.trim()) {
+      this.studyPlanError = 'Please enter your study goal.';
+      return;
+    }
+
+    this.isGeneratingStudyPlan = true;
+
+    try {
+      const tasks = this.pendingTasks.map(task => ({
+        subject: task.subject.trim(),
+        task: task.task.trim(),
+        category: task.category || 'General',
+        deadline: task.deadline || '',
+        completed: false
+      }));
+
+      this.aiStudyPlan =
+        await this.firebaseService.generateStudyPlan({
+          tasks,
+          availableHours: Number(this.aiAvailableHours),
+          goals: this.aiStudyGoals.trim()
+        });
+    } catch (error) {
+      console.error(
+        'Failed to generate study plan:',
+        error
+      );
+
+      this.studyPlanError =
+        error instanceof Error
+          ? error.message
+          : 'Unable to generate the study plan. Please try again.';
+    } finally {
+      this.isGeneratingStudyPlan = false;
+    }
+  }
 }

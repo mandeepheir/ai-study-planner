@@ -1,24 +1,17 @@
 <div class="ai-container">
 
-    <div class="ai-header">
-
-        <h1>AI Study Suggestions</h1>
+    <header class="ai-header">
+        <h1>Study Suggestions</h1>
 
         <p class="ai-description">
-            Your study planner analyzes deadlines, task categories,
-            workload, and urgency to recommend what you should study next.
+            Suggestions are calculated from your pending tasks, deadlines,
+            and categories. Completed tasks are never included.
         </p>
+    </header>
 
-    </div>
-
-
-    <!-- ============================= -->
     <!-- WORKLOAD OVERVIEW -->
-    <!-- ============================= -->
-
-    <section class="dashboard-section">
-
-        <h2>📊 Workload Overview</h2>
+    <section class="dashboard-section" aria-labelledby="overview-heading">
+        <h2 id="overview-heading"><span aria-hidden="true">📊</span> Workload overview</h2>
 
         <div class="overview-card">
 
@@ -28,293 +21,73 @@
                 [class.workload-moderate]="workloadLevel === 'Moderate'"
                 [class.workload-heavy]="workloadLevel === 'Heavy'"
             >
-
-                <span class="overview-label">
-                    Workload
-                </span>
-
-                <strong>
-                    {{ workloadLevel }}
-                </strong>
-
+                <span class="overview-label">Workload</span>
+                <strong>{{ workloadLevel }}</strong>
             </div>
 
-
             <div class="overview-item">
-
-                <span class="overview-label">
-                    Pending Tasks
-                </span>
-
-                <strong>
-                    {{ pendingTasks.length }}
-                </strong>
-
+                <span class="overview-label">Pending tasks</span>
+                <strong>{{ pendingTasks.length }}</strong>
             </div>
 
-
             <div class="overview-item">
-
-                <span class="overview-label">
-                    Estimated Study Time
-                </span>
-
-                <strong>
-                    {{ estimatedStudyHours }} hours
-                </strong>
-
+                <span class="overview-label">Estimated study time</span>
+                <strong>{{ estimatedStudyHours }} hours</strong>
             </div>
 
         </div>
-
     </section>
 
+    @if (pendingTasks.length === 0) {
 
-    <!-- ============================= -->
-    <!-- SMART STUDY SESSION -->
-    <!-- ============================= -->
+        <!-- SINGLE EMPTY STATE -->
+        <div class="empty-card" role="status">
+            <div class="empty-icon" aria-hidden="true">🎉</div>
+            <h3>You're all caught up</h3>
+            <p>
+                You have no pending tasks. Add a task with a deadline
+                and your suggestions will appear here.
+            </p>
+        </div>
 
-    <section class="dashboard-section">
+    } @else {
 
-        <h2>⏱ Smart Study Session</h2>
+        <!-- TODAY'S STUDY PLAN -->
+        <section class="dashboard-section" aria-labelledby="today-heading">
+            <h2 id="today-heading"><span aria-hidden="true">🎯</span> Study next</h2>
 
-        <div class="session-card">
-
-            <p class="session-description">
-                How much time do you have available to study?
+            <p class="section-description">
+                Your highest-priority tasks for today, with the reason for each.
             </p>
 
-
-            <div class="time-buttons">
-
-                <button
-                    (click)="createStudySession(30)"
-                >
-                    30 min
-                </button>
-
-                <button
-                    (click)="createStudySession(60)"
-                >
-                    60 min
-                </button>
-
-                <button
-                    (click)="createStudySession(90)"
-                >
-                    90 min
-                </button>
-
-                <button
-                    (click)="createStudySession(120)"
-                >
-                    120 min
-                </button>
-
-            </div>
-
-
-            <!-- GENERATED SESSION -->
-
-            @if (selectedStudyMinutes > 0) {
-
-                <div class="session-result">
-
-                    <h3>
-                        🎯 Your {{ selectedStudyMinutes }}-Minute Study Session
-                    </h3>
-
-
-                    @if (sessionTasks.length === 0) {
-
-                        <div class="session-empty">
-
-                            <p>
-                                No complete task fits within this study session.
-                                Try selecting a longer session.
-                            </p>
-
-                        </div>
-
-                    } @else {
-
-                        @for (task of sessionTasks; track task.id) {
-
-                            <div class="session-task">
-
-                                <div class="session-task-number">
-                                    {{ $index + 1 }}
-                                </div>
-
-
-                                <div class="session-task-content">
-
-                                    <h4>
-                                        {{ task.subject }}
-                                    </h4>
-
-                                    <p>
-                                        {{ task.task }}
-                                    </p>
-
-                                    <div class="task-meta">
-
-                                        <span>
-                                            <strong>Category:</strong>
-                                            {{ task.category }}
-                                        </span>
-
-                                        <span>
-                                            <strong>Deadline:</strong>
-                                            {{ task.deadline }}
-                                        </span>
-
-                                        <span>
-                                            <strong>Study Time:</strong>
-                                            {{ getTaskStudyMinutes(task) }} minutes
-                                        </span>
-
-                                    </div>
-
-
-                                    <div
-                                        class="priority-badge"
-                                        [class.high]="calculatePriority(task) === 'HIGH'"
-                                        [class.medium]="calculatePriority(task) === 'MEDIUM'"
-                                        [class.low]="calculatePriority(task) === 'LOW'"
-                                    >
-                                        {{ calculatePriority(task) }}
-                                    </div>
-
-
-                                    <div class="ai-reason">
-
-                                        <strong>
-                                            🤖 AI Reason
-                                        </strong>
-
-                                        <p>
-                                            {{ getTaskReason(task) }}
-                                        </p>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        }
-
-
-                        <div class="session-total">
-
-                            <strong>
-                                Total Planned Study Time:
-                            </strong>
-
-                            {{ sessionStudyMinutes }} minutes
-
-                        </div>
-
-                    }
-
-                </div>
-
-            }
-
-        </div>
-
-    </section>
-
-
-    <!-- ============================= -->
-    <!-- AI RECOMMENDATIONS -->
-    <!-- ============================= -->
-
-    <section class="dashboard-section">
-
-        <h2>🧠 AI Recommendations</h2>
-
-        <div class="recommendations-list">
-
-            @for(suggestion of suggestions; track $index) {
-
-                <div class="suggestion-card">
-
-                    <div class="suggestion-number">
-                        {{ $index + 1 }}
-                    </div>
-
-                    <p>
-                        {{ suggestion }}
-                    </p>
-
-                </div>
-
-            }
-
-        </div>
-
-    </section>
-
-
-    <!-- ============================= -->
-    <!-- TODAY'S STUDY PLAN -->
-    <!-- ============================= -->
-
-    <section class="dashboard-section">
-
-        <h2>🎯 Today's Study Plan</h2>
-
-        <p class="section-description">
-            Your highest-priority tasks recommended for today.
-        </p>
-
-
-        @if (dailyPlan.length === 0) {
-
-            <div class="empty-card">
-
-                <div class="empty-icon">
-                    🎉
-                </div>
-
-                <h3>
-                    No Tasks Scheduled
-                </h3>
-
-                <p>
-                    You currently have no pending tasks.
-                </p>
-
-            </div>
-
-        } @else {
-
             <div class="plan-list">
+                @for (task of dailyPlan; track task.id) {
+                    @let priority = calculatePriority(task);
 
-                @for(task of dailyPlan; track task.id) {
-
-                    <div class="plan-card">
-
-                        <div class="plan-number">
+                    <article class="plan-card">
+                        <div class="plan-number" aria-hidden="true">
                             {{ $index + 1 }}
                         </div>
 
-
                         <div class="plan-content">
+                            <div class="card-title-row">
+                                <h3>{{ task.subject }}</h3>
 
-                            <h3>
-                                {{ task.subject }}
-                            </h3>
+                                <span
+                                    class="priority-badge"
+                                    [class.high]="priority === 'HIGH'"
+                                    [class.medium]="priority === 'MEDIUM'"
+                                    [class.low]="priority === 'LOW'"
+                                >
+                                    {{ priority }} priority
+                                </span>
+                            </div>
 
                             <p class="task-description">
                                 {{ task.task }}
                             </p>
 
-
                             <div class="task-meta">
-
                                 <span>
                                     <strong>Category:</strong>
                                     {{ task.category }}
@@ -326,106 +99,242 @@
                                 </span>
 
                                 <span>
-                                    <strong>Priority Score:</strong>
+                                    <strong>Priority score:</strong>
                                     {{ calculatePriorityScore(task) }}
                                 </span>
-
                             </div>
-
 
                             <div class="ai-reason">
-
-                                <strong>
-                                    🤖 AI Reason
-                                </strong>
-
-                                <p>
-                                    {{ getTaskReason(task) }}
-                                </p>
-
+                                <strong>Why this task</strong>
+                                <p>{{ getTaskReason(task) }}</p>
                             </div>
-
                         </div>
-
-                    </div>
-
+                    </article>
                 }
-
             </div>
+        </section>
 
-        }
+        <!-- SMART STUDY SESSION -->
+        <section class="dashboard-section" aria-labelledby="session-heading">
+            <h2 id="session-heading"><span aria-hidden="true">⏱</span> Plan a study session</h2>
 
-    </section>
-
-
-    <!-- ============================= -->
-    <!-- PRIORITIZED TASKS -->
-    <!-- ============================= -->
-
-    <section class="dashboard-section">
-
-        <h2>📋 Prioritized Tasks</h2>
-
-        <p class="section-description">
-            Tasks ranked according to deadline urgency and category importance.
-        </p>
-
-
-        @if (pendingTasks.length === 0) {
-
-            <div class="empty-card">
-
-                <div class="empty-icon">
-                    ✅
-                </div>
-
-                <h3>
-                    No Pending Tasks
-                </h3>
-
-                <p>
-                    You have completed all your current tasks.
+            <div class="session-card">
+                <p class="session-description" id="session-question">
+                    How much time do you have available to study?
                 </p>
 
-            </div>
+                <div class="time-buttons" role="group" aria-labelledby="session-question">
+                    @for (minutes of [30, 60, 90, 120]; track minutes) {
+                        <button
+                            type="button"
+                            class="time-btn"
+                            [class.active]="selectedStudyMinutes === minutes"
+                            [attr.aria-pressed]="selectedStudyMinutes === minutes"
+                            (click)="createStudySession(minutes)"
+                        >
+                            {{ minutes }} min
+                        </button>
+                    }
+                </div>
 
-        } @else {
+                <div aria-live="polite">
+                    @if (selectedStudyMinutes > 0) {
+                        <div class="session-result">
+                            <h3>Your {{ selectedStudyMinutes }}-minute session</h3>
+
+                            @if (sessionTasks.length === 0) {
+                                <div class="session-empty">
+                                    <p>
+                                        No complete task fits within this session.
+                                        Try a longer session.
+                                    </p>
+                                </div>
+                            } @else {
+                                @for (task of sessionTasks; track task.id) {
+                                    @let sessionPriority = calculatePriority(task);
+
+                                    <article class="session-task">
+                                        <div class="session-task-number" aria-hidden="true">
+                                            {{ $index + 1 }}
+                                        </div>
+
+                                        <div class="session-task-content">
+                                            <h4>{{ task.subject }}</h4>
+                                            <p>{{ task.task }}</p>
+
+                                            <div class="task-meta">
+                                                <span>
+                                                    <strong>Category:</strong>
+                                                    {{ task.category }}
+                                                </span>
+
+                                                <span>
+                                                    <strong>Deadline:</strong>
+                                                    {{ task.deadline }}
+                                                </span>
+
+                                                <span>
+                                                    <strong>Study time:</strong>
+                                                    {{ getTaskStudyMinutes(task) }} minutes
+                                                </span>
+                                            </div>
+
+                                            <span
+                                                class="priority-badge"
+                                                [class.high]="sessionPriority === 'HIGH'"
+                                                [class.medium]="sessionPriority === 'MEDIUM'"
+                                                [class.low]="sessionPriority === 'LOW'"
+                                            >
+                                                {{ sessionPriority }} priority
+                                            </span>
+
+                                            <div class="ai-reason">
+                                                <strong>Why this task</strong>
+                                                <p>{{ getTaskReason(task) }}</p>
+                                            </div>
+                                        </div>
+                                    </article>
+                                }
+
+                                <div class="session-total">
+                                    <strong>Total planned study time:</strong>
+                                    {{ sessionStudyMinutes }} minutes
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+
+        <!-- RECOMMENDATIONS -->
+        <section class="dashboard-section" aria-labelledby="recs-heading">
+            <h2 id="recs-heading"><span aria-hidden="true">🧠</span> Recommendations</h2>
+
+            <ol class="recommendations-list">
+                @for (suggestion of suggestions; track $index) {
+                    <li class="suggestion-card">
+                        <span class="suggestion-number" aria-hidden="true">
+                            {{ $index + 1 }}
+                        </span>
+
+                        <p>{{ suggestion.text }}</p>
+                    </li>
+                }
+            </ol>
+        </section>
+
+        <!-- STUDY PLAN GENERATOR -->
+        <section class="dashboard-section" aria-labelledby="generator-heading">
+            <h2 id="generator-heading"><span aria-hidden="true">✨</span> Generate a study plan</h2>
+
+            <p class="section-description">
+                Enter your daily study hours and goal. The plan is built from
+                your pending tasks and deadlines.
+            </p>
+
+            <div class="session-card" [attr.aria-busy]="isGeneratingStudyPlan">
+
+                <div class="form-field">
+                    <label for="aiAvailableHours">
+                        Available study hours per day
+                    </label>
+
+                    <input
+                        id="aiAvailableHours"
+                        type="number"
+                        min="0.5"
+                        max="24"
+                        step="0.5"
+                        inputmode="decimal"
+                        aria-describedby="hours-hint"
+                        [(ngModel)]="aiAvailableHours"
+                        [disabled]="isGeneratingStudyPlan"
+                    />
+
+                    <small id="hours-hint" class="field-hint">
+                        Between 0.5 and 24 hours.
+                    </small>
+                </div>
+
+                <div class="form-field">
+                    <label for="aiStudyGoals">
+                        Your study goal
+                    </label>
+
+                    <textarea
+                        id="aiStudyGoals"
+                        rows="4"
+                        [(ngModel)]="aiStudyGoals"
+                        [disabled]="isGeneratingStudyPlan"
+                        placeholder="For example: prepare for exams and improve difficult topics."
+                    ></textarea>
+                </div>
+
+                <button
+                    type="button"
+                    class="primary-btn"
+                    (click)="generateAIStudyPlan()"
+                    [disabled]="isGeneratingStudyPlan"
+                >
+                    @if (isGeneratingStudyPlan) {
+                        Generating your plan...
+                    } @else {
+                        Generate study plan
+                    }
+                </button>
+
+                @if (studyPlanError) {
+                    <div class="ai-reason error-box" role="alert">
+                        <strong>Could not generate study plan</strong>
+                        <p>{{ studyPlanError }}</p>
+                    </div>
+                }
+
+                <div aria-live="polite">
+                    @if (aiStudyPlan) {
+                        <div class="session-result">
+                            <h3>Your study plan</h3>
+
+                            <div class="plan-text">{{ aiStudyPlan }}</div>
+                        </div>
+                    }
+                </div>
+
+            </div>
+        </section>
+
+        <!-- PRIORITIZED TASKS -->
+        <section class="dashboard-section" aria-labelledby="priority-heading">
+            <h2 id="priority-heading"><span aria-hidden="true">📋</span> All pending tasks by priority</h2>
+
+            <p class="section-description">
+                Ranked by deadline urgency and category importance.
+            </p>
 
             <div class="priority-list">
+                @for (task of pendingTasks; track task.id) {
+                    @let taskPriority = calculatePriority(task);
 
-                @for(task of pendingTasks; track task.id) {
-
-                    <div class="priority-card">
+                    <article class="priority-card">
 
                         <div class="priority-card-header">
-
                             <div>
-
-                                <h3>
-                                    {{ task.subject }}
-                                </h3>
-
-                                <p>
-                                    {{ task.task }}
-                                </p>
-
+                                <h3>{{ task.subject }}</h3>
+                                <p>{{ task.task }}</p>
                             </div>
 
-
-                            <div
+                            <span
                                 class="priority-badge"
-                                [class.high]="calculatePriority(task) === 'HIGH'"
-                                [class.medium]="calculatePriority(task) === 'MEDIUM'"
-                                [class.low]="calculatePriority(task) === 'LOW'"
+                                [class.high]="taskPriority === 'HIGH'"
+                                [class.medium]="taskPriority === 'MEDIUM'"
+                                [class.low]="taskPriority === 'LOW'"
                             >
-                                {{ calculatePriority(task) }}
-                            </div>
-
+                                {{ taskPriority }} priority
+                            </span>
                         </div>
 
-
                         <div class="task-meta">
-
                             <span>
                                 <strong>Category:</strong>
                                 {{ task.category }}
@@ -442,35 +351,21 @@
                             </span>
 
                             <span>
-                                <strong>Priority Score:</strong>
+                                <strong>Priority score:</strong>
                                 {{ calculatePriorityScore(task) }}
                             </span>
-
                         </div>
-
-
-                        <!-- AI EXPLANATION -->
 
                         <div class="ai-reason">
-
-                            <strong>
-                                🤖 Why this task matters
-                            </strong>
-
-                            <p>
-                                {{ getTaskReason(task) }}
-                            </p>
-
+                            <strong>Why this task matters</strong>
+                            <p>{{ getTaskReason(task) }}</p>
                         </div>
 
-                    </div>
-
+                    </article>
                 }
-
             </div>
+        </section>
 
-        }
-
-    </section>
+    }
 
 </div>

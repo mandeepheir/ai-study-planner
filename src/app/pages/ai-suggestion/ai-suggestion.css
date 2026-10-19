@@ -1,296 +1,599 @@
-/* ========================================= */
-/* AI CONTAINER */
-/* ========================================= */
+/* ============================================================
+   AI SUGGESTIONS PAGE
+   Works with the existing theme variables (--bg, --card-bg,
+   --card-border, --text, --text-muted, --btn-bg, --btn-text,
+   --text/bg-success|warning|danger). Page-level tokens below
+   are the only place to tweak the look.
+   ============================================================ */
 
 .ai-container {
+    /* tokens */
+    --ai-radius-lg: 16px;       /* big containers */
+    --ai-radius-md: 10px;       /* cards inside containers */
+    --ai-radius-sm: 6px;        /* small inner blocks */
+    --ai-accent: var(--btn-bg);
+    --ai-tint: color-mix(in srgb, var(--btn-bg) 7%, var(--card-bg));
+    --ai-hairline: color-mix(in srgb, var(--card-border) 70%, transparent);
+    --ai-spine: 4px;            /* priority stripe width */
+
+    /* status colours: self-contained so they work in light and dark mode */
+    --ai-danger:  #e5484d;
+    --ai-warning: #e0902e;
+    --ai-success: #30a46c;
+    --ai-danger-ink:  color-mix(in srgb, var(--ai-danger) 78%, var(--text));
+    --ai-warning-ink: color-mix(in srgb, var(--ai-warning) 78%, var(--text));
+    --ai-success-ink: color-mix(in srgb, var(--ai-success) 78%, var(--text));
+    --ai-danger-bg:  color-mix(in srgb, var(--ai-danger) 16%, transparent);
+    --ai-warning-bg: color-mix(in srgb, var(--ai-warning) 18%, transparent);
+    --ai-success-bg: color-mix(in srgb, var(--ai-success) 16%, transparent);
+
     width: 90%;
-    max-width: 1200px;
-    margin: 40px auto;
+    max-width: 1100px;
+    margin: 48px auto 80px;
+    line-height: 1.5;
+}
+
+.ai-container h1,
+.ai-container h2,
+.ai-container h3,
+.ai-container h4 {
+    letter-spacing: -0.015em;
+    text-wrap: balance;
 }
 
 
 /* ========================================= */
-/* HEADER */
+/* HEADER                                    */
 /* ========================================= */
 
 .ai-header {
-    margin-bottom: 35px;
+    margin-bottom: 44px;
 }
 
 .ai-header h1 {
-    margin: 0 0 8px;
-    font-size: 32px;
-    font-weight: 700;
+    margin: 0 0 12px;
+    font-size: clamp(28px, 4.5vw, 42px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
 }
 
 .ai-description {
     margin: 0;
+    max-width: 58ch;
     color: var(--text-muted);
-    font-size: 16px;
+    font-size: 17px;
     line-height: 1.6;
 }
 
 
 /* ========================================= */
-/* SECTIONS */
+/* SECTIONS                                  */
 /* ========================================= */
 
 .dashboard-section {
-    margin-top: 40px;
+    margin-top: 56px;
 }
 
 .dashboard-section h2 {
-    margin: 0 0 8px;
-    font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 6px;
+    font-size: 22px;
     font-weight: 700;
 }
 
 .section-description {
-    margin: 0 0 20px;
+    margin: 0 0 22px;
+    max-width: 62ch;
     color: var(--text-muted);
 }
 
 
 /* ========================================= */
-/* WORKLOAD OVERVIEW */
+/* WORKLOAD STRIP                            */
+/* One joined panel instead of three boxes.  */
 /* ========================================= */
 
 .overview-card {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin-top: 20px;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    margin-top: 18px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--ai-radius-lg);
+    overflow: hidden;
 }
 
 .overview-item {
-    padding: 20px;
-    background-color: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 10px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
+    padding: 24px 26px;
+}
+
+.overview-item + .overview-item {
+    border-left: 1px solid var(--ai-hairline);
 }
 
 .overview-label {
     font-size: 13px;
+    font-weight: 500;
     color: var(--text-muted);
 }
 
 .overview-item strong {
-    font-size: 24px;
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
 }
 
+/* workload level tints the whole first cell */
 .overview-item.workload-light {
-    border-left: 4px solid var(--text-success);
+    background-color: color-mix(in srgb, var(--ai-success-ink) 9%, var(--card-bg));
 }
-
-.overview-item.workload-light strong {
-    color: var(--text-success);
-}
-
 .overview-item.workload-moderate {
-    border-left: 4px solid var(--text-warning);
+    background-color: color-mix(in srgb, var(--ai-warning-ink) 10%, var(--card-bg));
 }
-
-.overview-item.workload-moderate strong {
-    color: var(--text-warning);
-}
-
 .overview-item.workload-heavy {
-    border-left: 4px solid var(--text-danger);
+    background-color: color-mix(in srgb, var(--ai-danger-ink) 9%, var(--card-bg));
 }
 
-.overview-item.workload-heavy strong {
-    color: var(--text-danger);
-}
+.overview-item.workload-light strong    { color: var(--ai-success-ink); }
+.overview-item.workload-moderate strong { color: var(--ai-warning-ink); }
+.overview-item.workload-heavy strong    { color: var(--ai-danger-ink); }
 
 
 /* ========================================= */
-/* SMART STUDY SESSION */
+/* CARD CONTAINER (session + generator)      */
 /* ========================================= */
 
 .session-card {
-    padding: 24px;
+    padding: 28px;
     background-color: var(--card-bg);
     border: 1px solid var(--card-border);
-    border-radius: 12px;
+    border-radius: var(--ai-radius-lg);
 }
 
 .session-description {
-    margin: 0 0 20px;
+    margin: 0 0 16px;
     color: var(--text-muted);
-}
-
-.time-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
+    font-weight: 500;
 }
 
 .session-result {
-    margin-top: 24px;
-    padding-top: 24px;
-    border-top: 1px solid var(--card-border);
+    margin-top: 28px;
+    padding-top: 26px;
+    border-top: 1px solid var(--ai-hairline);
 }
 
 .session-result h3 {
-    margin: 0 0 18px;
-    font-size: 17px;
+    margin: 0 0 8px;
+    font-size: 18px;
     font-weight: 700;
 }
 
 .session-empty {
-    padding: 14px;
-    background-color: var(--bg);
-    border-radius: 8px;
+    padding: 16px 18px;
+    background-color: var(--ai-tint);
+    border-radius: var(--ai-radius-md);
     color: var(--text-muted);
 }
 
-.session-task {
-    display: flex;
-    gap: 14px;
-    padding: 16px;
-    margin-top: 14px;
-    background-color: var(--bg);
-    border: 1px solid var(--card-border);
-    border-radius: 10px;
-}
-
-.session-task-number {
-    min-width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background-color: var(--btn-bg);
-    color: var(--btn-text);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-}
-
-.session-task-content {
-    flex: 1;
-}
-
-.session-task-content h4 {
-    margin: 0 0 6px;
-    font-size: 16px;
-    font-weight: 700;
-}
-
-.session-task-content > p {
-    margin: 4px 0;
-    line-height: 1.5;
+.session-empty p {
+    margin: 0;
 }
 
 
 /* ========================================= */
-/* TASK META */
+/* BUTTONS                                   */
+/* ========================================= */
+
+.time-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.time-btn,
+.primary-btn {
+    min-height: 46px;
+    padding: 10px 22px;
+    border-radius: var(--ai-radius-md);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
+}
+
+.time-btn {
+    min-width: 88px;
+    background-color: transparent;
+    color: var(--text);
+    border: 1px solid var(--card-border);
+    font-variant-numeric: tabular-nums;
+}
+
+.time-btn:hover {
+    background-color: var(--ai-tint);
+    border-color: var(--ai-accent);
+}
+
+.time-btn.active {
+    background-color: var(--ai-accent);
+    color: var(--btn-text);
+    border-color: var(--ai-accent);
+}
+
+.primary-btn {
+    margin-top: 4px;
+    background-color: var(--ai-accent);
+    color: var(--btn-text);
+    border: 1px solid var(--ai-accent);
+}
+
+.primary-btn:hover:not(:disabled) {
+    background-color: color-mix(in srgb, var(--ai-accent) 88%, var(--text));
+}
+
+.time-btn:active,
+.primary-btn:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.primary-btn:disabled,
+.time-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+
+/* ========================================= */
+/* FORM                                      */
+/* ========================================= */
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 20px;
+}
+
+.form-field label {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.form-field input,
+.form-field textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    background-color: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--card-border);
+    border-radius: var(--ai-radius-md);
+    font: inherit;
+    transition: border-color 0.15s;
+}
+
+.form-field input {
+    max-width: 180px;
+    font-variant-numeric: tabular-nums;
+}
+
+.form-field textarea {
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.5;
+}
+
+.form-field input:hover:not(:disabled),
+.form-field textarea:hover:not(:disabled) {
+    border-color: var(--ai-accent);
+}
+
+.form-field input:disabled,
+.form-field textarea:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.field-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+
+/* ========================================= */
+/* KEYBOARD FOCUS                            */
+/* ========================================= */
+
+.time-btn:focus-visible,
+.primary-btn:focus-visible,
+.form-field input:focus-visible,
+.form-field textarea:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--ai-accent) 55%, transparent);
+    outline-offset: 2px;
+}
+
+
+/* ========================================= */
+/* PRIORITY BADGE                            */
+/* A dot + text, so colour is never alone.   */
+/* ========================================= */
+
+.priority-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    flex-shrink: 0;
+    padding: 4px 12px 4px 10px;
+    margin-top: 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.priority-badge::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: currentColor;
+}
+
+.card-title-row .priority-badge,
+.priority-card-header .priority-badge {
+    margin-top: 0;
+}
+
+.priority-badge.high {
+    background-color: var(--ai-danger-bg);
+    color: var(--ai-danger-ink);
+}
+
+.priority-badge.medium {
+    background-color: var(--ai-warning-bg);
+    color: var(--ai-warning-ink);
+}
+
+.priority-badge.low {
+    background-color: var(--ai-success-bg);
+    color: var(--ai-success-ink);
+}
+
+
+/* ========================================= */
+/* TASK META                                 */
 /* ========================================= */
 
 .task-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px 18px;
-    margin-top: 10px;
+    gap: 6px 22px;
+    margin-top: 12px;
     font-size: 13px;
     color: var(--text-muted);
 }
 
 .task-meta strong {
+    margin-right: 2px;
+    font-weight: 600;
     color: var(--text);
 }
 
 
 /* ========================================= */
-/* PRIORITY BADGES */
-/* ========================================= */
-
-.priority-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    margin-top: 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.priority-badge.high {
-    background-color: var(--bg-danger);
-    color: var(--text-danger);
-}
-
-.priority-badge.medium {
-    background-color: var(--bg-warning);
-    color: var(--text-warning);
-}
-
-.priority-badge.low {
-    background-color: var(--bg-success);
-    color: var(--text-success);
-}
-
-
-/* ========================================= */
-/* AI REASON */
+/* WHY THIS TASK                             */
 /* ========================================= */
 
 .ai-reason {
-    margin-top: 14px;
-    padding: 12px 14px;
-    background-color: var(--bg);
-    border-left: 3px solid var(--btn-bg);
-    border-radius: 6px;
+    margin-top: 16px;
+    padding: 12px 16px;
+    background-color: var(--ai-tint);
+    border-radius: var(--ai-radius-sm);
 }
 
 .ai-reason strong {
     display: block;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
     color: var(--text);
     font-size: 13px;
+    font-weight: 700;
 }
 
 .ai-reason p {
     margin: 0;
+    max-width: 70ch;
     color: var(--text-muted);
-    font-size: 13px;
+    font-size: 14px;
     line-height: 1.6;
 }
 
+.ai-reason.error-box {
+    margin-top: 20px;
+    background-color: var(--ai-danger-bg);
+}
 
-/* ========================================= */
-/* SESSION TOTAL */
-/* ========================================= */
-
-.session-total {
-    margin-top: 18px;
-    padding: 14px;
-    background-color: var(--bg);
-    border-radius: 8px;
-    font-size: 14px;
+.ai-reason.error-box strong {
+    color: var(--ai-danger-ink);
 }
 
 
 /* ========================================= */
-/* AI RECOMMENDATIONS */
+/* STUDY NEXT (the featured list)            */
+/* Large rank numerals + a priority stripe.  */
 /* ========================================= */
 
-.recommendations-list {
+.plan-list {
     display: flex;
     flex-direction: column;
     gap: 12px;
     margin-top: 20px;
 }
 
+.plan-card {
+    position: relative;
+    display: flex;
+    gap: 20px;
+    padding: 22px 24px 22px 26px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--ai-radius-lg);
+    overflow: hidden;
+}
+
+/* priority stripe, driven by the badge inside the card */
+.plan-card::before,
+.priority-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: var(--ai-spine);
+    background-color: var(--card-border);
+}
+
+.plan-card:has(.priority-badge.high)::before,
+.priority-card:has(.priority-badge.high)::before   { background-color: var(--ai-danger); }
+
+.plan-card:has(.priority-badge.medium)::before,
+.priority-card:has(.priority-badge.medium)::before { background-color: var(--ai-warning); }
+
+.plan-card:has(.priority-badge.low)::before,
+.priority-card:has(.priority-badge.low)::before    { background-color: var(--ai-success); }
+
+.plan-number {
+    flex-shrink: 0;
+    min-width: 34px;
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: color-mix(in srgb, var(--text-muted) 55%, transparent);
+    font-variant-numeric: tabular-nums;
+}
+
+.plan-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.card-title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 6px;
+}
+
+.plan-content h3 {
+    margin: 0;
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.task-description {
+    margin: 0;
+    color: var(--text-muted);
+    line-height: 1.55;
+}
+
+/* one orchestrated entrance, plays once on load */
+@keyframes ai-rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: none; }
+}
+
+.plan-card {
+    animation: ai-rise 0.45s ease-out both;
+}
+.plan-card:nth-child(2) { animation-delay: 0.07s; }
+.plan-card:nth-child(3) { animation-delay: 0.14s; }
+.plan-card:nth-child(n+4) { animation-delay: 0.2s; }
+
+
+/* ========================================= */
+/* SESSION TASKS                             */
+/* ========================================= */
+
+.session-task {
+    display: flex;
+    gap: 16px;
+    padding: 18px 20px;
+    margin-top: 12px;
+    background-color: var(--ai-tint);
+    border-radius: var(--ai-radius-md);
+}
+
+.session-task-number {
+    flex-shrink: 0;
+    min-width: 24px;
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.1;
+    color: color-mix(in srgb, var(--text-muted) 60%, transparent);
+    font-variant-numeric: tabular-nums;
+}
+
+.session-task-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.session-task-content h4 {
+    margin: 0 0 4px;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.session-task-content > p {
+    margin: 2px 0;
+    color: var(--text-muted);
+}
+
+.session-task .ai-reason {
+    background-color: var(--card-bg);
+}
+
+.session-total {
+    margin-top: 18px;
+    padding: 14px 18px;
+    border: 1px dashed var(--card-border);
+    border-radius: var(--ai-radius-md);
+    font-size: 14px;
+}
+
+
+/* ========================================= */
+/* RECOMMENDATIONS                           */
+/* ========================================= */
+
+.recommendations-list {
+    display: flex;
+    flex-direction: column;
+    margin: 18px 0 0;
+    padding: 0;
+    list-style: none;
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--ai-radius-lg);
+    overflow: hidden;
+}
+
 .suggestion-card {
     display: flex;
     align-items: flex-start;
-    gap: 14px;
-    padding: 16px;
-    background-color: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 10px;
+    gap: 16px;
+    padding: 18px 24px;
+}
+
+.suggestion-card + .suggestion-card {
+    border-top: 1px solid var(--ai-hairline);
 }
 
 .suggestion-card p {
@@ -299,85 +602,54 @@
 }
 
 .suggestion-number {
-    min-width: 28px;
-    height: 28px;
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    margin-top: 1px;
     border-radius: 50%;
-    background-color: var(--btn-bg);
-    color: var(--btn-text);
+    background-color: var(--ai-tint);
+    color: var(--ai-accent);
+    border: 1px solid var(--ai-hairline);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
 }
 
 
 /* ========================================= */
-/* DAILY PLAN */
+/* GENERATED PLAN TEXT                       */
 /* ========================================= */
 
-.plan-list {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    margin-top: 20px;
-}
-
-.plan-card {
-    display: flex;
-    gap: 16px;
-    padding: 18px;
-    background-color: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-}
-
-.plan-number {
-    min-width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background-color: var(--btn-bg);
-    color: var(--btn-text);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 15px;
-    font-weight: 700;
-}
-
-.plan-content {
-    flex: 1;
-}
-
-.plan-content h3 {
-    margin: 0 0 6px;
-    font-size: 17px;
-    font-weight: 700;
-}
-
-.task-description {
-    margin: 0;
-    color: var(--text-muted);
-    line-height: 1.5;
+.plan-text {
+    padding: 18px 20px;
+    background-color: var(--ai-tint);
+    border-radius: var(--ai-radius-md);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    line-height: 1.75;
 }
 
 
 /* ========================================= */
-/* PRIORITIZED TASKS */
+/* ALL PENDING TASKS                         */
 /* ========================================= */
 
 .priority-list {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
     margin-top: 20px;
 }
 
 .priority-card {
-    padding: 20px;
+    position: relative;
+    padding: 20px 24px 20px 26px;
     background-color: var(--card-bg);
     border: 1px solid var(--card-border);
-    border-radius: 12px;
+    border-radius: var(--ai-radius-md);
+    overflow: hidden;
 }
 
 .priority-card-header {
@@ -388,99 +660,174 @@
 }
 
 .priority-card-header h3 {
-    margin: 0 0 6px;
-    font-size: 18px;
+    margin: 0 0 4px;
+    font-size: 17px;
     font-weight: 700;
 }
 
 .priority-card-header p {
     margin: 0;
     color: var(--text-muted);
-    line-height: 1.5;
+    line-height: 1.55;
 }
 
 
 /* ========================================= */
-/* EMPTY STATE */
+/* EMPTY STATE                               */
 /* ========================================= */
 
 .empty-card {
-    padding: 36px 24px;
-    margin-top: 20px;
-    background-color: var(--card-bg);
+    padding: 56px 24px;
+    margin-top: 48px;
+    background-color: var(--ai-tint);
     border: 1px dashed var(--card-border);
-    border-radius: 12px;
+    border-radius: var(--ai-radius-lg);
     text-align: center;
 }
 
 .empty-icon {
-    width: 32px;
-    height: 32px;
-    margin: 0 auto 10px;
-    color: var(--text-muted);
+    margin: 0 0 14px;
+    font-size: 40px;
+    line-height: 1;
 }
 
 .empty-card h3 {
     margin: 0 0 8px;
-    font-size: 17px;
+    font-size: 20px;
     font-weight: 700;
 }
 
 .empty-card p {
-    margin: 0;
+    margin: 0 auto;
+    max-width: 46ch;
     color: var(--text-muted);
 }
 
 
 /* ========================================= */
-/* TABLET */
+/* TABLET                                    */
 /* ========================================= */
 
 @media (max-width: 900px) {
 
     .overview-card {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 1fr 1fr;
+    }
+
+    /* workload spans the full first row */
+    .overview-item:first-child {
+        grid-column: 1 / -1;
+        border-bottom: 1px solid var(--ai-hairline);
+    }
+
+    .overview-item:nth-child(2) {
+        border-left: none;
     }
 
 }
 
 
 /* ========================================= */
-/* MOBILE */
+/* MOBILE                                    */
 /* ========================================= */
 
 @media (max-width: 600px) {
 
     .ai-container {
-        width: 94%;
-        margin-top: 25px;
+        width: 92%;
+        margin-top: 28px;
     }
 
-    .ai-header h1 {
+    .ai-header {
+        margin-bottom: 32px;
+    }
+
+    .ai-description {
+        font-size: 15px;
+    }
+
+    .dashboard-section {
+        margin-top: 44px;
+    }
+
+    .dashboard-section h2 {
+        font-size: 20px;
+    }
+
+    .overview-item {
+        padding: 18px 20px;
+    }
+
+    .overview-item strong {
         font-size: 26px;
     }
 
-    .overview-card {
-        grid-template-columns: 1fr;
-        gap: 12px;
+    .session-card {
+        padding: 20px;
     }
 
+    /* 2x2 grid of time buttons instead of a tall stack */
     .time-buttons {
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
     }
 
-    .time-buttons button {
+    .primary-btn {
         width: 100%;
+    }
+
+    .form-field input {
+        max-width: none;
+    }
+
+    .plan-card {
+        flex-direction: column;
+        gap: 6px;
+        padding: 18px 18px 18px 22px;
+    }
+
+    .plan-number {
+        font-size: 30px;
+    }
+
+    .card-title-row,
+    .priority-card-header {
+        flex-direction: column;
+        gap: 8px;
     }
 
     .task-meta {
         flex-direction: column;
-        gap: 6px;
+        gap: 4px;
     }
 
-    .priority-card-header {
+    .session-task {
         flex-direction: column;
-        gap: 8px;
+        gap: 4px;
+    }
+
+    .suggestion-card {
+        padding: 16px 18px;
+    }
+
+    .priority-card {
+        padding: 18px 18px 18px 22px;
+    }
+
+}
+
+
+/* ========================================= */
+/* REDUCED MOTION                            */
+/* ========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .ai-container *,
+    .ai-container *::before,
+    .ai-container *::after {
+        animation: none !important;
+        transition: none !important;
     }
 
 }

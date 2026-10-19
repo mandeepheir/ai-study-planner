@@ -1,13 +1,6 @@
 
 import { Injectable, inject } from '@angular/core';
-
-import {
-  Auth,
-  authState
-} from '@angular/fire/auth';
-
-import { firstValueFrom } from 'rxjs';
-
+import { Auth } from '@angular/fire/auth';
 import {
   Firestore,
   collection,
@@ -21,6 +14,7 @@ import {
 } from '@angular/fire/firestore';
 
 export interface StudyTask {
+  id?: string;
   subject: string;
   task: string;
   category: string;
@@ -29,40 +23,38 @@ export interface StudyTask {
   userId?: string;
 }
 
+export interface StudyPlanRequest {
+  tasks: StudyTask[];
+  availableHours: number;
+  goals: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseService {
-
-  // Connect to Firestore
   private firestore = inject(Firestore);
-
-  // Connect to Firebase Authentication
   private auth = inject(Auth);
 
-  // Reference to the tasks collection
   private tasksCollection = collection(
     this.firestore,
     'tasks'
   );
 
-  // Wait for Firebase to restore the signed-in user's state,
-  // then get the user's Firebase ID token.
+  // Get the signed-in user's Firebase authentication token.
   async getIdToken(): Promise<string> {
-    const user = await firstValueFrom(
-      authState(this.auth)
-    );
+    const user = this.auth.currentUser;
 
     if (!user) {
       throw new Error(
-        'Firebase has no authenticated user. Please sign in again.'
+        'Please sign in before generating a study plan.'
       );
     }
 
     return user.getIdToken();
   }
 
-  // Test Firebase authentication with the Node.js backend
+  // Test whether the backend accepts Firebase authentication.
   async testBackendAuth(): Promise<any> {
     const token = await this.getIdToken();
 
@@ -85,74 +77,104 @@ export class FirebaseService {
     return response.json();
   }
 
-  // Add a new task for the logged-in user
+  // Send real task details to the Node.js backend.
+  async generateStudyPlan(
+    request: StudyPlanRequest
+  ): Promise<string> {
+    const token = await this.getIdToken();
+
+    const response = await fetch(
+      'http://localhost:3000/api/ai/study-plan',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(request)
+      }
+    );
+
+    if (!response.ok) {
+      let message =
+        `Study plan request failed: ${response.status}`;
+
+      try {
+        const errorBody = await response.json();
+
+        if (typeof errorBody.error === 'string') {
+          message = errorBody.error;
+        }
+      } catch {
+        // Keep the fallback error message.
+      }
+
+      throw new Error(message);
+    }
+
+    const data = await response.json();
+
+    if (
+      typeof data.studyPlan !== 'string' ||
+      !data.studyPlan.trim()
+    ) {
+      throw new Error(
+        'The backend returned an empty study plan.'
+      );
+    }
+
+    return data.studyPlan;
+  }
+
+  // Add a task for the signed-in user.
   addTask(task: StudyTask) {
     const currentUser = this.auth.currentUser;
 
     if (!currentUser) {
-      throw new Error(
-        'No user is currently logged in.'
-      );
+      throw new Error('No user is currently logged in.');
     }
 
-    const taskWithUser = {
-      ...task,
-      userId: currentUser.uid
-    };
+    const { id, ...taskData } = task;
 
-    return addDoc(
-      this.tasksCollection,
-      taskWithUser
-    );
+    return addDoc(this.tasksCollection, {
+      ...taskData,
+      userId: currentUser.uid
+    });
   }
 
-  // Get tasks belonging to the logged-in user
+  // Retrieve tasks belonging to the signed-in user.
   getTasks() {
     const currentUser = this.auth.currentUser;
 
     if (!currentUser) {
-      throw new Error(
-        'No user is currently logged in.'
-      );
+      throw new Error('No user is currently logged in.');
     }
 
     const userTasksQuery = query(
       this.tasksCollection,
-      where(
-        'userId',
-        '==',
-        currentUser.uid
-      )
+      where('userId', '==', currentUser.uid)
     );
 
     return collectionData(
       userTasksQuery,
-      {
-        idField: 'id'
-      }
+      { idField: 'id' }
     );
   }
 
-  // Update task completion status
-  updateTask(
-    taskId: string,
-    completed: boolean
-  ) {
+  // Mark a task complete or incomplete.
+  updateTask(taskId: string, completed: boolean) {
     const taskDocument = doc(
       this.firestore,
       'tasks',
       taskId
     );
 
-    return updateDoc(
-      taskDocument,
-      {
-        completed: completed
-      }
-    );
+    return updateDoc(taskDocument, {
+      completed
+    });
   }
 
-  // Delete a task
+  // Delete a task.
   deleteTask(taskId: string) {
     const taskDocument = doc(
       this.firestore,
@@ -163,17 +185,21 @@ export class FirebaseService {
     return deleteDoc(taskDocument);
   }
 
-  // Test Firestore connection
+  // Test the Firestore connection.
   testFirestore() {
-    return addDoc(
-      this.tasksCollection,
-      {
-        subject: 'Firebase Test',
-        task: 'Testing Firestore connection',
-        category: 'Test',
-        deadline: '2026-09-10',
-        completed: false
-      }
-    );
+    const currentUser = this.auth.currentUser;
+
+    if (!currentUser) {
+      throw new Error('Please sign in first.');
+    }
+
+    return addDoc(this.tasksCollection, {
+      subject: 'Firebase Test',
+      task: 'Testing Firestore connection',
+      category: 'Test',
+      deadline: '2026-09-10',
+      completed: false,
+      userId: currentUser.uid
+    });
   }
 }

@@ -1,16 +1,8 @@
 
 <app-header></app-header>
 
-<main class="auth-test">
-  <h2>Backend Authentication Test</h2>
-
-  <p>{{ authTestMessage }}</p>
-
-  <p *ngIf="authTestSuccess">
-    Firebase authentication verified successfully!
-  </p>
+<main>
+  <router-outlet></router-outlet>
 </main>
-
-<router-outlet></router-outlet>
 
 <app-footer></app-footer>
